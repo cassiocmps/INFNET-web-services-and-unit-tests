@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ReimbursementCalculatorTest {
 
     ReimbursementCalculator calculator;
+    FakeConsultationHistory fakeHistory;
 
     @BeforeEach
     void setUp() {
         // Setup
-        calculator = new ReimbursementCalculator();
+        fakeHistory = new FakeConsultationHistory();
+        calculator = new ReimbursementCalculator(fakeHistory);
     }
 
     @Test
@@ -18,9 +20,10 @@ public class ReimbursementCalculatorTest {
         double consultationValue = 200.0;
         double coveragePercentage = 0.70;
         double expectedReimbursement = 140.0;
+        Patient patient = new Patient();
 
         // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage);
+        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
 
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
@@ -32,9 +35,10 @@ public class ReimbursementCalculatorTest {
         double consultationValue = 0.0;
         double coveragePercentage = 0.70;
         double expectedReimbursement = 0.0;
+        Patient patient = new Patient();
 
         // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage);
+        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
 
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
@@ -46,9 +50,10 @@ public class ReimbursementCalculatorTest {
         double consultationValue = 200.0;
         double coveragePercentage = 0.0;
         double expectedReimbursement = 0.0;
+        Patient patient = new Patient();
 
         // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage);
+        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
 
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
@@ -58,11 +63,12 @@ public class ReimbursementCalculatorTest {
     void Calculate_FullCoveragePercentage_ReturnsFullConsultationValue() {
         // Arrange
         double consultationValue = 200.0;
-        double coveragePercentage = 1.0; // 100%
+        double coveragePercentage = 1.0;
         double expectedReimbursement = 200.0;
+        Patient patient = new Patient();
 
         // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage);
+        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
 
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
