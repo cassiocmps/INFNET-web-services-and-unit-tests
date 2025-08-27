@@ -7,7 +7,7 @@ public class ReimbursementCalculator {
         this.audit = audit;
     }
 
-    public double calculate(double consultationValue, IHealthPlan plan, Patient patient) {
+    public double calculate(double consultationValue, IHealthPlan plan, IPatient patient) {
         double reimbursementValue = consultationValue * plan.getCoveragePercentage();
         consultationHistory.addConsultation(patient, consultationValue);
         audit.recordConsultation(patient, reimbursementValue);

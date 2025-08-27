@@ -1,10 +1,10 @@
 public class AuditServiceSpy implements IAuditService {
     private boolean recordConsultationCalled = false;
-    private Patient lastPatient;
+    private IPatient lastPatient;
     private double lastValue;
 
     @Override
-    public void recordConsultation(Patient patient, double reimbursementValue) {
+    public void recordConsultation(IPatient patient, double reimbursementValue) {
         recordConsultationCalled = true;
         lastPatient = patient;
         lastValue = reimbursementValue;
@@ -14,7 +14,7 @@ public class AuditServiceSpy implements IAuditService {
         return recordConsultationCalled;
     }
 
-    public Patient getLastPatient() {
+    public IPatient getLastPatient() {
         return lastPatient;
     }
 

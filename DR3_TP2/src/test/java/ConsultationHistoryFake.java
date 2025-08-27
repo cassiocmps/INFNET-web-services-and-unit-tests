@@ -1,15 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class FakeConsultationHistory implements IConsultationHistory {
+public class ConsultationHistoryFake implements IConsultationHistory {
     private List<Double> consultations;
 
-    public FakeConsultationHistory() {
+    public ConsultationHistoryFake() {
         this.consultations = new ArrayList<>();
     }
 
     @Override
-    public void addConsultation(Patient patient, double consultationValue) {
+    public void addConsultation(IPatient patient, double consultationValue) {
         consultations.add(consultationValue);
     }
 

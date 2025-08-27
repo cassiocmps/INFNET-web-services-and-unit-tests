@@ -1,3 +1,3 @@
 public interface IAuditService {
-    void recordConsultation(Patient patient, double reimbursementValue);
+    void recordConsultation(IPatient patient, double reimbursementValue);
 }

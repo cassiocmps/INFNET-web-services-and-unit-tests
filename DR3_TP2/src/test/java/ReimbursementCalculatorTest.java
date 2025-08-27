@@ -6,17 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ReimbursementCalculatorTest {
 
     ReimbursementCalculator calculator;
-    FakeConsultationHistory history;
-    Patient patient;
+    ConsultationHistoryFake history;
+    PatientDummy patient;
     AuditServiceSpy auditSpy;
 
     @BeforeEach
     void setUp() {
         // Setup
-        history = new FakeConsultationHistory();
+        history = new ConsultationHistoryFake();
         auditSpy = new AuditServiceSpy();
         calculator = new ReimbursementCalculator(history, auditSpy);
-        patient = new Patient();
+        patient = new PatientDummy();
     }
 
     @Test
