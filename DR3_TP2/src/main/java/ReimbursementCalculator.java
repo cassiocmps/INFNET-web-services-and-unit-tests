@@ -5,8 +5,9 @@ public class ReimbursementCalculator {
         this.consultationHistory = consultationHistory;
     }
 
-    public double calculate(double consultationValue, double coveragePercentage, Patient patient) {
+    public double calculate(double consultationValue, PlanoSaude plano, Patient patient) {
         consultationHistory.addConsultation(consultationValue);
+        double coveragePercentage = plano.getCoveragePercentage();
         return consultationValue * coveragePercentage;
     }
 }
