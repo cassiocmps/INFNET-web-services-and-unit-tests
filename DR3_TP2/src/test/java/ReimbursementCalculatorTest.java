@@ -1,6 +1,9 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReimbursementCalculatorTest {
@@ -9,13 +12,15 @@ public class ReimbursementCalculatorTest {
     ConsultationHistoryFake history;
     PatientDummy patient;
     AuditServiceSpy auditSpy;
+    IReimbursementAuthorizer authorizerMock;
 
     @BeforeEach
     void setUp() {
         // Setup
         history = new ConsultationHistoryFake();
         auditSpy = new AuditServiceSpy();
-        calculator = new ReimbursementCalculator(history, auditSpy);
+        authorizerMock = Mockito.mock(IReimbursementAuthorizer.class);
+        calculator = new ReimbursementCalculator(history, auditSpy, authorizerMock);
         patient = new PatientDummy();
     }
 
@@ -25,6 +30,8 @@ public class ReimbursementCalculatorTest {
         double consultationValue = 200.0;
         IHealthPlan plan = new HealthPlan50Stub();
         double expectedReimbursement = 100.0;
+        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
+
 
         // Act
         double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
@@ -39,6 +46,7 @@ public class ReimbursementCalculatorTest {
         double consultationValue = 200.0;
         IHealthPlan plan = new HealthPlan80Stub();
         double expectedReimbursement = 160.0;
+        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
 
         // Act
         double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
@@ -53,6 +61,7 @@ public class ReimbursementCalculatorTest {
         double consultationValue = 0.0;
         IHealthPlan plan = new HealthPlan50Stub();
         double expectedReimbursement = 0.0;
+        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
 
         // Act
         double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
@@ -66,6 +75,7 @@ public class ReimbursementCalculatorTest {
        // Arrange
        double consultationValue = 200.0;
        IHealthPlan plan = new HealthPlan50Stub();
+       Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
 
        // Act
        calculator.calculate(consultationValue, plan, patient);
@@ -73,4 +83,17 @@ public class ReimbursementCalculatorTest {
        // Assert
        assertTrue(auditSpy.wasRecordConsultationCalled());
    }
+
+    @Test
+    void Calculate_WhenNotAuthorized_ThrowsException() {
+        // Arrange
+        double consultationValue = 200.0;
+        IHealthPlan plan = new HealthPlan50Stub();
+        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            calculator.calculate(consultationValue, plan, patient);
+        });
+    }
 }

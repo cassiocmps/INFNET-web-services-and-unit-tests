@@ -1,3 +1,3 @@
 public interface IReimbursementAuthorizer {
-    boolean authorize(IPatient patient, double consultationValue);
+    boolean authorize(double consultationValue, IHealthPlan plan, IPatient patient);
 }
