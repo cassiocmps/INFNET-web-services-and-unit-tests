@@ -49,9 +49,9 @@ public class ReimbursementCalculatorTest {
     @Test
     void Calculate_With80PercentCoverage_ReturnsCorrectReimbursement() {
         // Arrange
-        double consultationValue = 200.0;
+        double consultationValue = 100.0;
         IHealthPlan plan = new HealthPlan80Stub();
-        double expectedReimbursement = 160.0;
+        double expectedReimbursement = 80.0;
         Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
 
         // Act
@@ -99,5 +99,20 @@ public class ReimbursementCalculatorTest {
         assertThrows(IllegalArgumentException.class, () -> {
             calculator.calculate(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient());
         });
+    }
+
+    @Test
+    void Calculate_ReimbursementExceedsMaximum_ReturnsMaximum() {
+        // Arrange
+        double consultationValue = 200.0;
+        IHealthPlan plan = new HealthPlan80Stub();
+        double expectedReimbursement = ReimbursementCalculator.MAX_REIMBURSEMENT_LIMIT;
+        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
+
+        // Act
+        double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
+
+        // Assert
+        assertEqualsWithTolerance(expectedReimbursement, actualReimbursement);
     }
 }
