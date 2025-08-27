@@ -28,6 +28,10 @@ public class ReimbursementCalculatorTest {
         return new Consultation(200.0, new HealthPlan50Stub(), patient);
     }
 
+    private void assertEqualsWithTolerance(double expected, double actual) {
+        assertEquals(expected, actual, 0.01);
+    }
+
     @Test
     void Calculate_With50PercentCoverage_ReturnsCorrectReimbursement() {
         // Arrange
@@ -39,7 +43,7 @@ public class ReimbursementCalculatorTest {
         double actualReimbursement = calculator.calculate(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient());
 
         // Assert
-        assertEquals(expectedReimbursement, actualReimbursement, 0.01);
+        assertEqualsWithTolerance(expectedReimbursement, actualReimbursement);
     }
 
     @Test
@@ -54,7 +58,7 @@ public class ReimbursementCalculatorTest {
         double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
 
         // Assert
-        assertEquals(expectedReimbursement, actualReimbursement, 0.01);
+        assertEqualsWithTolerance(expectedReimbursement, actualReimbursement);
     }
 
     @Test
@@ -69,7 +73,7 @@ public class ReimbursementCalculatorTest {
         double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
 
         // Assert
-        assertEquals(expectedReimbursement, actualReimbursement, 0.01);
+        assertEqualsWithTolerance(expectedReimbursement, actualReimbursement);
     }
 
    @Test
