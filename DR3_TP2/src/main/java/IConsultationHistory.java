@@ -1,6 +1,6 @@
 import java.util.List;
 
 public interface IConsultationHistory {
-    void addConsultation(double consultationValue);
+    void addConsultation(Patient patient, double consultationValue);
     List<Double> getAllConsultations();
 }

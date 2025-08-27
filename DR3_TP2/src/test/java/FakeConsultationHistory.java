@@ -9,7 +9,7 @@ public class FakeConsultationHistory implements IConsultationHistory {
     }
 
     @Override
-    public void addConsultation(double consultationValue) {
+    public void addConsultation(Patient patient, double consultationValue) {
         consultations.add(consultationValue);
     }
 

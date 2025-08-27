@@ -1,13 +1,16 @@
 public class ReimbursementCalculator {
-    private ConsultationHistory consultationHistory;
+    private IConsultationHistory consultationHistory;
+    private IAuditService audit;
 
-    public ReimbursementCalculator(ConsultationHistory consultationHistory) {
+    public ReimbursementCalculator(IConsultationHistory consultationHistory, IAuditService audit) {
         this.consultationHistory = consultationHistory;
+        this.audit = audit;
     }
 
-    public double calculate(double consultationValue, PlanoSaude plano, Patient patient) {
-        consultationHistory.addConsultation(consultationValue);
-        double coveragePercentage = plano.getCoveragePercentage();
-        return consultationValue * coveragePercentage;
+    public double calculate(double consultationValue, IHealthPlan plan, Patient patient) {
+        double reimbursementValue = consultationValue * plan.getCoveragePercentage();
+        consultationHistory.addConsultation(patient, consultationValue);
+        audit.recordConsultation(patient, reimbursementValue);
+        return reimbursementValue;
     }
 }

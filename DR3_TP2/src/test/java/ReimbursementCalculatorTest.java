@@ -1,18 +1,21 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReimbursementCalculatorTest {
 
     ReimbursementCalculator calculator;
     FakeConsultationHistory history;
     Patient patient;
+    AuditServiceSpy auditSpy;
 
     @BeforeEach
     void setUp() {
         // Setup
         history = new FakeConsultationHistory();
-        calculator = new ReimbursementCalculator(history);
+        auditSpy = new AuditServiceSpy();
+        calculator = new ReimbursementCalculator(history, auditSpy);
         patient = new Patient();
     }
 
@@ -57,4 +60,17 @@ public class ReimbursementCalculatorTest {
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
     }
+
+   @Test
+   void Calculate_WhenCalled_CallsAudit() {
+       // Arrange
+       double consultationValue = 200.0;
+       IHealthPlan plan = new HealthPlan50Stub();
+
+       // Act
+       calculator.calculate(consultationValue, plan, patient);
+
+       // Assert
+       assertTrue(auditSpy.wasRecordConsultationCalled());
+   }
 }
