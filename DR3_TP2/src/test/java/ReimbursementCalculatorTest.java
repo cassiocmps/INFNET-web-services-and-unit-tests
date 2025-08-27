@@ -100,4 +100,19 @@ public class ReimbursementCalculatorTest {
             calculator.calculate(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient());
         });
     }
+
+    @Test
+    void Calculate_ReimbursementExceedsMaximum_ReturnsMaximum() {
+        // Arrange
+        double consultationValue = 200.0;
+        IHealthPlan plan = new HealthPlan80Stub();
+        double expectedReimbursement = ReimbursementCalculator.MAX_REIMBURSEMENT_LIMIT;
+        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
+
+        // Act
+        double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
+
+        // Assert
+        assertEqualsWithTolerance(expectedReimbursement, actualReimbursement);
+    }
 }
