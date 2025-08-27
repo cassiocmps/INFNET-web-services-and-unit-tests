@@ -5,25 +5,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ReimbursementCalculatorTest {
 
     ReimbursementCalculator calculator;
-    FakeConsultationHistory fakeHistory;
+    FakeConsultationHistory history;
+    Patient patient;
 
     @BeforeEach
     void setUp() {
         // Setup
-        fakeHistory = new FakeConsultationHistory();
-        calculator = new ReimbursementCalculator(fakeHistory);
+        history = new FakeConsultationHistory();
+        calculator = new ReimbursementCalculator(history);
+        patient = new Patient();
     }
 
     @Test
-    void Calculate_ConsultationValueAndCoverage_ReturnsCorrectReimbursement() {
+    void Calculate_With50PercentCoverage_ReturnsCorrectReimbursement() {
         // Arrange
         double consultationValue = 200.0;
-        double coveragePercentage = 0.70;
-        double expectedReimbursement = 140.0;
-        Patient patient = new Patient();
+        IHealthPlan plan = new HealthPlan50Stub();
+        double expectedReimbursement = 100.0;
 
         // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
+        double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
+
+        // Assert
+        assertEquals(expectedReimbursement, actualReimbursement, 0.01);
+    }
+
+    @Test
+    void Calculate_With80PercentCoverage_ReturnsCorrectReimbursement() {
+        // Arrange
+        double consultationValue = 200.0;
+        IHealthPlan plan = new HealthPlan80Stub();
+        double expectedReimbursement = 160.0;
+
+        // Act
+        double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
 
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
@@ -33,42 +48,11 @@ public class ReimbursementCalculatorTest {
     void Calculate_ZeroConsultationValue_ReturnsZeroReimbursement() {
         // Arrange
         double consultationValue = 0.0;
-        double coveragePercentage = 0.70;
+        IHealthPlan plan = new HealthPlan50Stub();
         double expectedReimbursement = 0.0;
-        Patient patient = new Patient();
 
         // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
-
-        // Assert
-        assertEquals(expectedReimbursement, actualReimbursement, 0.01);
-    }
-
-    @Test
-    void Calculate_ZeroCoveragePercentage_ReturnsZeroReimbursement() {
-        // Arrange
-        double consultationValue = 200.0;
-        double coveragePercentage = 0.0;
-        double expectedReimbursement = 0.0;
-        Patient patient = new Patient();
-
-        // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
-
-        // Assert
-        assertEquals(expectedReimbursement, actualReimbursement, 0.01);
-    }
-
-    @Test
-    void Calculate_FullCoveragePercentage_ReturnsFullConsultationValue() {
-        // Arrange
-        double consultationValue = 200.0;
-        double coveragePercentage = 1.0;
-        double expectedReimbursement = 200.0;
-        Patient patient = new Patient();
-
-        // Act
-        double actualReimbursement = calculator.calculate(consultationValue, coveragePercentage, patient);
+        double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
 
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
