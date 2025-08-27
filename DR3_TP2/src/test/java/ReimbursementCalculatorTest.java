@@ -24,17 +24,19 @@ public class ReimbursementCalculatorTest {
         patient = new PatientDummy();
     }
 
+    private Consultation createDefaultConsultation() {
+        return new Consultation(200.0, new HealthPlan50Stub(), patient);
+    }
+
     @Test
     void Calculate_With50PercentCoverage_ReturnsCorrectReimbursement() {
         // Arrange
-        double consultationValue = 200.0;
-        IHealthPlan plan = new HealthPlan50Stub();
+        Consultation consultation = createDefaultConsultation();
         double expectedReimbursement = 100.0;
-        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
-
+        Mockito.when(authorizerMock.authorize(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient())).thenReturn(true);
 
         // Act
-        double actualReimbursement = calculator.calculate(consultationValue, plan, patient);
+        double actualReimbursement = calculator.calculate(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient());
 
         // Assert
         assertEquals(expectedReimbursement, actualReimbursement, 0.01);
@@ -73,12 +75,11 @@ public class ReimbursementCalculatorTest {
    @Test
    void Calculate_WhenCalled_CallsAudit() {
        // Arrange
-       double consultationValue = 200.0;
-       IHealthPlan plan = new HealthPlan50Stub();
-       Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(true);
+       Consultation consultation = createDefaultConsultation();
+       Mockito.when(authorizerMock.authorize(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient())).thenReturn(true);
 
        // Act
-       calculator.calculate(consultationValue, plan, patient);
+       calculator.calculate(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient());
 
        // Assert
        assertTrue(auditSpy.wasRecordConsultationCalled());
@@ -87,13 +88,12 @@ public class ReimbursementCalculatorTest {
     @Test
     void Calculate_WhenNotAuthorized_ThrowsException() {
         // Arrange
-        double consultationValue = 200.0;
-        IHealthPlan plan = new HealthPlan50Stub();
-        Mockito.when(authorizerMock.authorize(consultationValue, plan, patient)).thenReturn(false);
+        Consultation consultation = createDefaultConsultation();
+        Mockito.when(authorizerMock.authorize(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient())).thenReturn(false);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            calculator.calculate(consultationValue, plan, patient);
+            calculator.calculate(consultation.getConsultationValue(), consultation.getPlan(), consultation.getPatient());
         });
     }
 }
