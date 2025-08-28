@@ -116,3 +116,32 @@ public class ReimbursementCalculatorTest {
         assertEqualsWithTolerance(expectedReimbursement, actualReimbursement);
     }
 }
+    @Test
+    void Calculate_WithStubMockAndFake_IntegratesAllComponentsCorrectly() {
+        // Arrange
+        IHealthPlan healthPlanStub = new HealthPlan80Stub();
+
+        IReimbursementAuthorizer authorizerMock = Mockito.mock(IReimbursementAuthorizer.class);
+        Mockito.when(authorizerMock.authorize(Mockito.anyDouble(), Mockito.any(IHealthPlan.class), Mockito.any(IPatient.class)))
+                .thenReturn(true);
+
+        ConsultationHistoryFake historyFake = new ConsultationHistoryFake();
+
+        IPatient patientDummy = new PatientDummy();
+
+        historyFake.addConsultation(patientDummy, 200.0);
+        historyFake.addConsultation(patientDummy, 300.0);
+
+        ReimbursementCalculator calculator = new ReimbursementCalculator(historyFake, authorizerMock, null);
+
+        // Act
+        double reimbursement = calculator.calculate(500.0, healthPlanStub, patientDummy);
+
+        // Assert
+        assertEqualsWithTolerance(400.0, reimbursement);
+
+        Mockito.verify(authorizerMock).authorize(500.0, healthPlanStub, patientDummy);
+
+        assertEquals(3, historyFake.getAllConsultations().size());
+        assertTrue(historyFake.getAllConsultations().contains(500.0));
+    }
