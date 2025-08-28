@@ -9,9 +9,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ReimbursementCalculatorTest {
 
     ReimbursementCalculator calculator;
+    // Fakes are objects that have working implementations, but not the same as production. 
+    // They usually take some shortcut and have a simplified version of the code. 
+    // A common example is an in-memory database.
     ConsultationHistoryFake history;
+    
+    // A dummy object is passed around but never actually used. 
+    // They are usually just to fill parameter lists.
     PatientDummy patient;
+    
+    // A spy is a real object that we can monitor. We can "spy" on its method calls, 
+    // for example, to see how many times a method was called.
     AuditServiceSpy auditSpy;
+    
+    // Mocks are pre-programmed with expectations which form a specification of the calls they are expected to receive. 
+    // They can throw an exception if they receive a call they don't expect and are checked during verification 
+    // to ensure they got all the calls they were expecting.
     IReimbursementAuthorizer authorizerMock;
 
     @BeforeEach
