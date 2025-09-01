@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ReimbursementCalculatorTest {
 
     ReimbursementCalculator calculator;
+    
     // Fakes are objects that have working implementations, but not the same as production. 
     // They usually take some shortcut and have a simplified version of the code. 
     // A common example is an in-memory database.
@@ -19,12 +20,11 @@ public class ReimbursementCalculatorTest {
     PatientDummy patient;
     
     // A spy is a real object that we can monitor. We can "spy" on its method calls, 
-    // for example, to see how many times a method was called.
+    // for example, to confirm if a method was called.
     AuditServiceSpy auditSpy;
-    
-    // Mocks are pre-programmed with expectations which form a specification of the calls they are expected to receive. 
-    // They can throw an exception if they receive a call they don't expect and are checked during verification 
-    // to ensure they got all the calls they were expecting.
+
+    // Mocks are substitutes for parts of the system that are irrelevant to the test, but necessary for process it to run. 
+    // They are pre-programmed with expectations which form a specification of the calls they are expected to receive.
     IReimbursementAuthorizer authorizerMock;
 
     @BeforeEach
@@ -128,7 +128,7 @@ public class ReimbursementCalculatorTest {
         // Assert
         assertEqualsWithTolerance(expectedReimbursement, actualReimbursement);
     }
-}
+
     @Test
     void Calculate_WithStubMockAndFake_IntegratesAllComponentsCorrectly() {
         // Arrange
@@ -145,16 +145,19 @@ public class ReimbursementCalculatorTest {
         historyFake.addConsultation(patientDummy, 200.0);
         historyFake.addConsultation(patientDummy, 300.0);
 
-        ReimbursementCalculator calculator = new ReimbursementCalculator(historyFake, authorizerMock, null);
+        AuditServiceSpy auditSpy = new AuditServiceSpy();
+        ReimbursementCalculator calculator = new ReimbursementCalculator(historyFake, auditSpy, authorizerMock);
 
         // Act
         double reimbursement = calculator.calculate(500.0, healthPlanStub, patientDummy);
 
         // Assert
-        assertEqualsWithTolerance(400.0, reimbursement);
+        assertEqualsWithTolerance(150.0, reimbursement);
 
         Mockito.verify(authorizerMock).authorize(500.0, healthPlanStub, patientDummy);
 
         assertEquals(3, historyFake.getAllConsultations().size());
         assertTrue(historyFake.getAllConsultations().contains(500.0));
+        assertTrue(auditSpy.wasRecordConsultationCalled());
     }
+}
